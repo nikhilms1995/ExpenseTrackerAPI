@@ -2,6 +2,9 @@ using ExpenseTrackerAPI.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MediatR;
+using ExpenseTrackerAPI.Domain.Interfaces;
+using ExpenseTrackerAPI.Infrastructure.Repositories;
+using ExpenseTrackerAPI.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,10 +16,16 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var configuration = builder.Configuration;
+builder.Services.AddSingleton<IConfiguration>(configuration);
 builder.Services.AddDbContext<ExpenseTrackerDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ExpenseTrackerDb")));
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+
+builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ExpenseTrackerDbContext>();
+builder.Services.AddScoped<JwtTokenService>();
 
 var app = builder.Build();
 

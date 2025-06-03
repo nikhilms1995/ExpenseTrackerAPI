@@ -1,14 +1,16 @@
 ﻿using ExpenseTrackerAPI.Features.Expenses.Commands;
 using ExpenseTrackerAPI.Features.Expenses.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseTrackerAPI.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class ExpensesController : ControllerBase
+    public class ExpensesController : BaseController
     {
 
         private readonly IMediator _mediator;
@@ -18,10 +20,12 @@ namespace ExpenseTrackerAPI.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet("{userId}")]
-        public async Task<IActionResult> GetExpensesByUser(Guid userId)
+        [HttpGet]
+        public async Task<IActionResult> GetExpensesByUser()
         {
-            var expenses = await _mediator.Send(new GetExpensesQuery(userId));
+            if (UserId == null)
+                return Unauthorized();
+            var expenses = await _mediator.Send(new GetExpensesQuery(UserId.Value));
             return Ok(expenses);
         }
 

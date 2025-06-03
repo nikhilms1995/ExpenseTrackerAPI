@@ -15,10 +15,11 @@ namespace ExpenseTrackerAPI.Infrastructure.Repositories
         { 
             _expenseTrackerDbContext = expenseTrackerDbContext ?? throw new ArgumentNullException(nameof(expenseTrackerDbContext));
         }
+
         public async Task<User?> GetUserByEmailAsync(string email)
         {
             return await _expenseTrackerDbContext.Users
-                .FirstOrDefaultAsync(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+                .FirstOrDefaultAsync(u => u.Email.ToLower().Equals(email.ToLower()));
         }
 
         public async Task<Guid> RegisterUserAsync(User user)

@@ -7,7 +7,7 @@ namespace ExpenseTrackerAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController : BaseController
     {
         public IMediator _mediator;
         public AuthController(IMediator mediator)
@@ -17,6 +17,20 @@ namespace ExpenseTrackerAPI.Controllers
         
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterUserCommand request)
+        {
+            try
+            {
+                var token = await _mediator.Send(request);
+                return Ok(new { Token = token });
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginUserCommand request)
         {
             var token = await _mediator.Send(request);
             return Ok(new { Token = token });
